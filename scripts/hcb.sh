@@ -34,15 +34,15 @@ EOF
 
 main() {
   # define available options
-  # a colon after an option means that option requires a value
   local opts_short="h"
-  local opts_long="help,charts-dir:,package-out:,index-out:,since-target:,since-kind:"
+  local opts_long="help,charts-dir:,package-out:,index-out:"
+#  local opts_long="help,charts-dir:,package-out:,index-out:,since-target:,since-kind:"
 
   local parsed_opts
   # parse options, allow side effects even on failure
   if ! parsed_opts=$(getopt --options "${opts_short}" --longoptions "${opts_long}" --name "$0" -- "$@") ; then
     usage
-    exit 2
+    exit 1
   fi
 
   # set the parsed arguments as the arguments for the current invocation context
@@ -71,26 +71,26 @@ main() {
         exit 1
       fi
       ;;
-    --since-kind)
-      if [[ -n "${2:-}" ]]; then
-        since_kind="$2"
-        shift 2
-      else
-        echo "ERROR: '--since-kind' cannot be empty." >&2
-        usage
-        exit 1
-      fi
-      ;;
-    --since-target)
-      if [[ -n "${2:-}" ]]; then
-        since_target="$2"
-        shift 2
-      else
-        echo "ERROR: '--since-target' cannot be empty." >&2
-        usage
-        exit 1
-      fi
-      ;;
+#    --since-kind)
+#      if [[ -n "${2:-}" ]]; then
+#        since_kind="$2"
+#        shift 2
+#      else
+#        echo "ERROR: '--since-kind' cannot be empty." >&2
+#        usage
+#        exit 1
+#      fi
+#      ;;
+#    --since-target)
+#      if [[ -n "${2:-}" ]]; then
+#        since_target="$2"
+#        shift 2
+#      else
+#        echo "ERROR: '--since-target' cannot be empty." >&2
+#        usage
+#        exit 1
+#      fi
+#      ;;
     --)
       shift
       break
