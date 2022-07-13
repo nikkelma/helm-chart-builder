@@ -27,6 +27,9 @@ ENTRYPOINT ["hcb.sh"]
 # ---
 FROM runner as tester
 
-RUN apk --no-cache add yq
+RUN apk --no-cache add yq make
+
+RUN mkdir -p /opt/nikkelma/helm-chart-builder-test/
+COPY tests/ Makefile /opt/nikkelma/helm-chart-builder-test/
 
 ENTRYPOINT ["bash"]
