@@ -1,5 +1,5 @@
-test_targets := $(shell ls test)
+test_targets := $(shell ls tests)
 
 .PHONY: test
 test:
-	cd test/ && echo ${test_targets}
+	cd tests/ && echo ${test_targets}
