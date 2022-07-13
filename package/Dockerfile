@@ -29,7 +29,10 @@ FROM runner as tester
 
 RUN apk --no-cache add yq make
 
-RUN mkdir -p /opt/nikkelma/helm-chart-builder-test/
-COPY tests/ Makefile /opt/nikkelma/helm-chart-builder-test/
+RUN mkdir -p /opt/nikkelma/helm-chart-builder-test/tests/
+WORKDIR /opt/nikkelma/helm-chart-builder-test/
+
+COPY Makefile /opt/nikkelma/helm-chart-builder-test/
+COPY tests /opt/nikkelma/helm-chart-builder-test/tests/
 
 ENTRYPOINT ["bash"]
