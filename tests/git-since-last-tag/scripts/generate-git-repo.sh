@@ -1,7 +1,11 @@
 #!/bin/bash
 
-cd "${HCB_TEST_BASE_DIR}" || {
-  echo "cd ${HCB_TEST_BASE_DIR} failed; exiting"
+if [ -z "${REPO_DIR}" ]; then
+  REPO_DIR="repo-tree"
+fi
+
+cd "${REPO_DIR}" || {
+  echo "cd ${REPO_DIR} failed; exiting"
   exit 1
 }
 
