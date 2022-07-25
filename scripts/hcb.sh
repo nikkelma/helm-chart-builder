@@ -35,8 +35,8 @@ EOF
 main() {
   # define available options
   local opts_short="h"
-  local opts_long="help,charts-dir:,package-out:,index-out:"
-#  local opts_long="help,charts-dir:,package-out:,index-out:,since-target:,since-kind:"
+  local opts_long="help,repo-root:,charts-dir:,package-out:,index-out:"
+#  local opts_long="help,repo-root:,charts-dir:,package-out:,index-out:,since-target:,since-kind:"
 
   local parsed_opts
   # parse options, allow side effects even on failure
@@ -49,6 +49,7 @@ main() {
   eval set -- "${parsed_opts}"
 
   # define which variables will be used to store resulting values
+  local repo_root
   local charts_dir="charts"
   local artifact_base_dir="/opt/nikkelma/helm-chart-builder/artifacts/"
   local since_kind="last-tag"
@@ -60,6 +61,16 @@ main() {
     -h | --help)
       usage
       exit
+      ;;
+    --repo-root)
+      if [[ -n "${2:-}" ]]; then
+        repo_root="$2"
+        shift 2
+      else
+        echo "ERROR: '--repo-root' cannot be empty." >&2
+        usage
+        exit 1
+      fi
       ;;
     --charts-dir)
       if [[ -n "${2:-}" ]]; then
@@ -104,6 +115,10 @@ main() {
       ;;
     esac
   done
+
+  if [[ -z "${repo_root}" ]]; then
+    repo_root=$(git rev-parse --show-toplevel)
+  fi
 
   local latest_tag
   latest_tag="$(lookup_latest_tag)"
