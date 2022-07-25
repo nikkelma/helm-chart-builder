@@ -20,6 +20,7 @@ Usage: $(basename "$0") [options]
   -h, --help           Display help
       --repo-root      Location of git repo's root repository (override default auto-detection)
       --charts-dir     Base directory containing all charts (default: charts)
+      --charts-depth   How many subdirectories deep to search for charts (default: 1)
       --package-out    Base directory for generated Helm package directory ".hcb-package"
                          (default: /opt/nikkelma/helm-chart-builder/artifacts/)
       --index-out      Base directory for generated index file ".hcb-index"
@@ -35,8 +36,8 @@ EOF
 main() {
   # define available options
   local opts_short="h"
-  local opts_long="help,repo-root:,charts-dir:,package-out:,index-out:"
-#  local opts_long="help,repo-root:,charts-dir:,package-out:,index-out:,since-target:,since-kind:"
+  local opts_long="help,repo-root:,charts-dir:,charts-depth:,package-out:,index-out:"
+#  local opts_long="help,repo-root:,charts-dir:,charts-depth:,package-out:,index-out:,since-target:,since-kind:"
 
   local parsed_opts
   # parse options, allow side effects even on failure
@@ -51,6 +52,7 @@ main() {
   # define which variables will be used to store resulting values
   local repo_root
   local charts_dir="charts"
+  local charts_depth="1"
   local artifact_base_dir="/opt/nikkelma/helm-chart-builder/artifacts/"
   local since_kind="last-tag"
   local since_target
@@ -78,6 +80,16 @@ main() {
         shift 2
       else
         echo "ERROR: '--charts-dir' cannot be empty." >&2
+        usage
+        exit 1
+      fi
+      ;;
+    --charts-depth)
+      if [[ -n "${2:-}" ]]; then
+        charts_depth="$2"
+        shift 2
+      else
+        echo "ERROR: '--charts-depth' cannot be empty." >&2
         usage
         exit 1
       fi
@@ -125,7 +137,7 @@ main() {
 
   echo "Discovering changed charts since '$latest_tag'..."
   local changed_charts=()
-  readarray -t changed_charts <<< "$(lookup_changed_charts "$latest_tag")"
+  readarray -t changed_charts <<< "$(charts_depth="${charts_depth}" lookup_changed_charts "$latest_tag")"
 
   if [[ -n "${changed_charts[*]}" ]]; then
     rm -rf "${artifact_base_dir}/.hcb-package" "${artifact_base_dir}/.hcb-index"
@@ -171,7 +183,7 @@ lookup_changed_charts() {
   local changed_files
   changed_files=$(git diff --find-renames --name-only "$commit" -- "$charts_dir")
 
-  local depth=$(( $(tr "/" "\n" <<< "$charts_dir" | sed '/^\(\.\)*$/d' | wc -l) + 1 ))
+  local depth=$(( $(tr "/" "\n" <<< "$charts_dir" | sed '/^\(\.\)*$/d' | wc -l) + "${charts_depth}" ))
   local fields="1-${depth}"
 
   cut -d '/' -f "$fields" <<< "$changed_files" | uniq | filter_charts
