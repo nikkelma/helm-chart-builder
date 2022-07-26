@@ -133,11 +133,16 @@ main() {
   fi
 
   local latest_tag
-  latest_tag="$(lookup_latest_tag)"
+  {
+    prev_commit="$(git rev-parse HEAD~1)" && \
+    latest_tag="$(lookup_latest_tag "${prev_commit}")"
+  } || {
+    latest_tag="$(lookup_latest_tag)"
+  }
 
   echo "Discovering changed charts since '$latest_tag'..."
   local changed_charts=()
-  readarray -t changed_charts <<< "$(charts_depth="${charts_depth}" lookup_changed_charts "$latest_tag")"
+  readarray -t changed_charts <<< "$(lookup_changed_charts "${latest_tag}" "${charts_depth}")"
 
   if [[ -n "${changed_charts[*]}" ]]; then
     rm -rf "${artifact_base_dir}/.hcb-package" "${artifact_base_dir}/.hcb-index"
@@ -156,9 +161,15 @@ main() {
 }
 
 # https://github.com/helm/chart-releaser-action/blob/main/cr.sh
+# function signature: lookup_latest_tag [target_commit]
 lookup_latest_tag() {
+  target_commit="$1"
+  if [[ -z "${target_commit}" ]]; then
+    target_commit="$(git rev-parse HEAD)"
+  fi
+
   git fetch --tags > /dev/null 2>&1
-  if ! git describe --tags --abbrev=0 2> /dev/null; then
+  if ! git describe --tags --abbrev=0 "${target_commit}" 2> /dev/null; then
     git rev-list --max-parents=0 --first-parent HEAD
   fi
 }
@@ -177,8 +188,10 @@ filter_charts() {
 }
 
 # https://github.com/helm/chart-releaser-action/blob/main/cr.sh
+# function signature: lookup_changed_charts <commit> <charts_depth>
 lookup_changed_charts() {
   local commit="$1"
+  local charts_depth="$2"
 
   local changed_files
   changed_files=$(git diff --find-renames --name-only "$commit" -- "$charts_dir")
@@ -189,6 +202,8 @@ lookup_changed_charts() {
   cut -d '/' -f "$fields" <<< "$changed_files" | uniq | filter_charts
 }
 
+# https://github.com/helm/chart-releaser-action/blob/main/cr.sh
+# function signature: [config=<config>] package_chart <chart>
 package_chart() {
   local chart="$1"
 
