@@ -163,7 +163,7 @@ main() {
 # https://github.com/helm/chart-releaser-action/blob/main/cr.sh
 # function signature: lookup_latest_tag [target_commit]
 lookup_latest_tag() {
-  target_commit="$1"
+  local target_commit="$1"
   if [[ -z "${target_commit}" ]]; then
     target_commit="$(git rev-parse HEAD)"
   fi
