@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 test_targets := $(shell ls tests)
 
 .PHONY: build-tests
