@@ -35,4 +35,6 @@ WORKDIR /opt/nikkelma/helm-chart-builder-test/
 COPY Makefile /opt/nikkelma/helm-chart-builder-test/
 COPY tests /opt/nikkelma/helm-chart-builder-test/tests/
 
+RUN make build-tests
+
 ENTRYPOINT ["bash"]
