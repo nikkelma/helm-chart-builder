@@ -203,11 +203,15 @@ lookup_changed_charts() {
 }
 
 # https://github.com/helm/chart-releaser-action/blob/main/cr.sh
-# function signature: [config=<config>] package_chart <chart>
+# function signature: [config=<config>] [artifact_base_dir=<package-path>] package_chart <chart>
 package_chart() {
   local chart="$1"
+  local cr_package_path=".cr-release-packages"
+  if [[ -n "${artifact_base_dir}" ]]; then
+    cr_package_path="${artifact_base_dir}"
+  fi
 
-  local args=("$chart" --package-path .cr-release-packages)
+  local args=("$chart" --package-path "${cr_package_path}")
   if [[ -n "$config" ]]; then
     args+=(--config "$config")
   fi
