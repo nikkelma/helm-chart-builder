@@ -6,7 +6,7 @@ test_targets := $(shell ls tests)
 build-tests:
 	for d in ./tests/* ; do \
       pushd "$${d}"; \
-      [ -f "$${d}"/scripts/build.sh ] && "$${d}"/scripts/build.sh ; \
+	  [ -f ./scripts/build.sh ] && ./scripts/build.sh ; \
       popd; \
     done
 
