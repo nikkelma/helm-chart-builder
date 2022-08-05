@@ -150,7 +150,7 @@ main() {
 
     for chart in "${changed_charts[@]}"; do
       if [[ -d "$chart" ]]; then
-        artifact_base_dir="${artifact_base_dir}" package_chart "$chart"
+        package_path="${artifact_base_dir}/.hcb-package" package_chart "$chart"
       else
         echo "Chart '$chart' no longer exists in repo. Skipping it..."
       fi
@@ -203,12 +203,12 @@ lookup_changed_charts() {
 }
 
 # https://github.com/helm/chart-releaser-action/blob/main/cr.sh
-# function signature: [config=<config>] [artifact_base_dir=<package-path>] package_chart <chart>
+# function signature: [config=<config>] [package_path=<package-path>] package_chart <chart>
 package_chart() {
   local chart="$1"
   local cr_package_path=".cr-release-packages"
-  if [[ -n "${artifact_base_dir}" ]]; then
-    cr_package_path="${artifact_base_dir}"
+  if [[ -n "${package_path}" ]]; then
+    cr_package_path="${package_path}"
   fi
 
   local args=("$chart" --package-path "${cr_package_path}")
