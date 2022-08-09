@@ -1,3 +1,4 @@
+# ---
 FROM alpine:3.15 as base
 
 RUN apk --no-cache add ca-certificates git curl bash
@@ -20,7 +21,7 @@ RUN curl -LO https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz && \
 RUN mkdir -p /opt/nikkelma/helm-chart-builder/
 WORKDIR /opt/nikkelma/helm-chart-builder/
 
----
+# ---
 FROM base as runner
 
 COPY scripts/hcb.sh /usr/local/bin/hcb.sh
