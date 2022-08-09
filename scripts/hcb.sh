@@ -21,9 +21,9 @@ Usage: $(basename "$0") [options]
       --repo-root      Location of git repo's root repository (override default auto-detection)
       --charts-dir     Base directory containing all charts (default: charts)
       --charts-depth   How many subdirectories deep to search for charts (default: 1)
-      --package-out    Base directory for generated Helm package directory ".hcb-package"
-                         (default: /opt/nikkelma/helm-chart-builder/artifacts/)
-      --index-out      Base directory for generated index file ".hcb-index"
+      --package-out    Directory for generated Helm packages
+                         (default: /opt/nikkelma/helm-chart-builder/artifacts/.hcb-package)
+      --index-out      Directory for generated index file
                          (default: /opt/nikkelma/helm-chart-builder/artifacts/)
 EOF
 # TODO - support more targets than "last-tag"
@@ -53,9 +53,10 @@ main() {
   local repo_root
   local charts_dir="charts"
   local charts_depth="1"
-  local artifact_base_dir="/opt/nikkelma/helm-chart-builder/artifacts/"
+  local package_out="/opt/nikkelma/helm-chart-builder/artifacts/.hcb-package/"
+  local index_out="/opt/nikkelma/helm-chart-builder/artifacts/index.yaml"
   local since_kind="last-tag"
-  local since_target
+#  local since_target
 
   # parse flags, storing values and shifting arguments as needed
   while true; do
@@ -90,6 +91,26 @@ main() {
         shift 2
       else
         echo "ERROR: '--charts-depth' cannot be empty." >&2
+        usage
+        exit 1
+      fi
+      ;;
+    --package-out)
+      if [[ -n "${2:-}" ]]; then
+        package_out="$2"
+        shift 2
+      else
+        echo "ERROR: '--package-out' cannot be empty." >&2
+        usage
+        exit 1
+      fi
+      ;;
+    --index-out)
+      if [[ -n "${2:-}" ]]; then
+        index_out="$2"
+        shift 2
+      else
+        echo "ERROR: '--index-out' cannot be empty." >&2
         usage
         exit 1
       fi
@@ -145,12 +166,12 @@ main() {
   readarray -t changed_charts <<< "$(lookup_changed_charts "${latest_tag}" "${charts_depth}")"
 
   if [[ -n "${changed_charts[*]}" ]]; then
-    rm -rf "${artifact_base_dir}/.hcb-package" "${artifact_base_dir}/.hcb-index"
-    mkdir -p "${artifact_base_dir}/.hcb-package" "${artifact_base_dir}/.hcb-index"
+    rm -rf "${package_out}" "${index_out}"
+    mkdir -p "${package_out}" "${index_out}"
 
     for chart in "${changed_charts[@]}"; do
       if [[ -d "$chart" ]]; then
-        package_path="${artifact_base_dir}/.hcb-package" package_chart "$chart"
+        package_path="${package_out}" package_chart "$chart"
       else
         echo "Chart '$chart' no longer exists in repo. Skipping it..."
       fi
