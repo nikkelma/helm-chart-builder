@@ -6,10 +6,18 @@ test_targets := $(shell ls tests)
 build-tests:
 	for d in ./tests/* ; do \
       pushd "$${d}"; \
-	  [ -f ./scripts/build.sh ] && ./scripts/build.sh ; \
+      [ -f ./scripts/build.sh ] && ./scripts/build.sh ; \
       popd; \
     done
 
 .PHONY: test
 test:
-	cd tests/ && echo ${test_targets}
+	for d in ./tests/* ; do \
+      pushd "$${d}"; \
+      if [ -f ./ ]; then \
+        ./scripts/test.sh ; \
+      else \
+        echo "$${d} does not contain scripts/test.sh" && exit 1; \
+      fi \
+      popd; \
+    done
