@@ -38,7 +38,7 @@ check_folder_files() {
 }
 
 main() {
-  pushd repo-tree || {
+  pushd repo-tree 1>&2 || {
     echo "failed changing to repo directory; exiting" 1>&2
     exit 1
   }
@@ -49,16 +49,17 @@ main() {
   # test 1
   # ======
 
-  git checkout test-1-1
-  hcb.sh --charts-depth=2
+  git checkout test-1-1 1>&2
+  hcb.sh --charts-depth=2 1>&2
   check_folder_files nginx-test-a-1.0.0.tgz || failed=1
   clean_artifact_dir
 
-  git checkout test-1-2
-  mkdir -p /tmp/package-out/
+  git checkout test-1-2 1>&2
+  mkdir -p /tmp/package-out/ 1>&2
   hcb.sh --charts-depth=2 --package-out /tmp/package-out/
   directory="/tmp/package-out/" check_folder_files nginx-test-a-1.0.1.tgz || failed=1
   clean_artifact_dir "/tmp/package-out/"
+  rm -rf "/tmp/package-out/"
 
   if [[ $failed -ne 0 ]]; then
     echo "test 1 failed; exiting"
@@ -69,7 +70,7 @@ main() {
   # test 2
   # ======
 
-  popd || {
+  popd 1>&2 || {
     echo "failed changing to original directory; exiting" 1>&2
     exit 1
   }
