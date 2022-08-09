@@ -44,26 +44,31 @@ main() {
 
   local failed=0
 
-  echo "should package single chart with no previous tags"
+  echo "---"
+  echo "running test: should package single chart with no previous tags"
   git checkout test-1-1 1>&2
   hcb.sh --charts-depth=2 1>&2
-  check_folder_files nginx-test-a-1.0.0.tgz || failed=1
+  { check_folder_files nginx-test-a-1.0.0.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
 
-  echo "should package single chart with tag on previous commit"
+  echo "---"
+  echo "running test: should package single chart with tag on previous commit"
   git checkout test-1-2 1>&2
-  hcb.sh --charts-depth=2 1>&2check_folder_files nginx-test-a-1.0.1.tgz || failed=1
+  hcb.sh --charts-depth=2 1>&2
+  { check_folder_files nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
 
-  echo "should package single chart with tag on previous commit in non-default directory"
+  echo "---"
+  echo "running test: should package single chart with tag on previous commit in non-default directory"
   git checkout test-1-3 1>&2
-  mkdir -p /tmp/package-out/ 1>&2
-  hcb.sh --charts-depth=2 --package-out /tmp/package-out/ 1>&2
-  directory="/tmp/package-out/" check_folder_files nginx-test-a-1.0.1.tgz || failed=1
-  clean_artifact_dir "/tmp/package-out/"
-  rm -rf "/tmp/package-out/"
+  mkdir -p /tmp/package-out 1>&2
+  hcb.sh --charts-depth=2 --package-out /tmp/package-out 1>&2
+  { directory="/tmp/package-out" check_folder_files nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
+  clean_artifact_dir "/tmp/package-out"
+  rm -rf "/tmp/package-out"
 
   if [[ $failed -ne 0 ]]; then
+    echo "==="
     echo "base tests failed; exiting"
     exit 1
   fi
