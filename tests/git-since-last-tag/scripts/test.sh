@@ -58,7 +58,7 @@ main() {
   hcb.sh --charts-depth=2 --package-out /tmp/package-out/
   directory="/tmp/package-out/" check_folder_files nginx-test-a-1.0.1.tgz || failed=1
   clean_artifact_dir "/tmp/package-out/"
-  
+
   if [[ $failed -ne 0 ]]; then
     echo "test 1 failed; exiting"
     exit 1
