@@ -13,7 +13,6 @@ clean_artifact_dir() {
 # function signature: [directory=<directory>] check_folder_files <file> [file...]
 check_folder_files() {
   target_dir="/opt/nikkelma/helm-chart-builder/artifacts/.hcb-package/"
-  echo "input directory: $directory"
   if [[ -n ${directory} ]]; then
     target_dir="${directory}"
   fi
