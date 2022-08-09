@@ -73,10 +73,18 @@ main() {
     exit 1
   fi
 
+  echo "---"
   echo "should package multiple charts with no previous tags"
-  git checkout test-2-1 1>&2
+  git checkout test-3-1 1>&2
   hcb.sh --charts-depth=2 1>&2
   { check_folder_files nginx-test-a-1.0.0.tgz nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
+  clean_artifact_dir
+
+  echo "---"
+  echo "should package multiple charts with with tag on previous commit"
+  git checkout test-3-2 1>&2
+  hcb.sh --charts-depth=2 1>&2
+  { check_folder_files nginx-test-b-1.0.0.tgz nginx-test-b-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
 
   popd 1>&2 || {
