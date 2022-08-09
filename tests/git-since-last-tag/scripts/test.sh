@@ -63,7 +63,7 @@ main() {
   git checkout test-1-3 1>&2
   mkdir -p /tmp/package-out 1>&2
   hcb.sh --charts-depth=2 --package-out /tmp/package-out 1>&2
-  { directory="/tmp/package-out" check_folder_files nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
+  { directory="/tmp/package-out" check_folder_files nginx-test-b-1.0.0.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir "/tmp/package-out"
   rm -rf "/tmp/package-out"
 
@@ -76,7 +76,7 @@ main() {
   echo "should package multiple charts with no previous tags"
   git checkout test-2-1 1>&2
   hcb.sh --charts-depth=2 1>&2
-  check_folder_files nginx-test-a-1.0.0.tgz nginx-test-a-1.0.1.tgz || failed=1
+  { check_folder_files nginx-test-a-1.0.0.tgz nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
 
   popd 1>&2 || {
