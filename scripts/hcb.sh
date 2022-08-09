@@ -23,10 +23,10 @@ Usage: $(basename "$0") [options]
       --charts-depth   How many subdirectories deep to search for charts (default: 1)
       --package-out    Directory for generated Helm packages
                          (default: /opt/nikkelma/helm-chart-builder/artifacts/.hcb-package)
-      --index-out      Directory for generated index file
-                         (default: /opt/nikkelma/helm-chart-builder/artifacts/)
 EOF
-# TODO - support more targets than "last-tag"
+# TODO - support generating index; support more targets than "last-tag"
+#      --index-out      Directory for generated index file
+#                         (default: /opt/nikkelma/helm-chart-builder/artifacts/)
 #      --since-kind     Kind of target (default: last-tag - options: last-tag, tag, commit, branch)
 #                         > values "tag", "commit", "branch" require flag --since-target
 #      --since-target   Target id/name for diff, if required (commit id, tag name, branch name)
@@ -36,7 +36,7 @@ EOF
 main() {
   # define available options
   local opts_short="h"
-  local opts_long="help,repo-root:,charts-dir:,charts-depth:,package-out:,index-out:"
+  local opts_long="help,repo-root:,charts-dir:,charts-depth:,package-out:"
 #  local opts_long="help,repo-root:,charts-dir:,charts-depth:,package-out:,index-out:,since-target:,since-kind:"
 
   local parsed_opts
@@ -54,7 +54,7 @@ main() {
   local charts_dir="charts"
   local charts_depth="1"
   local package_out="/opt/nikkelma/helm-chart-builder/artifacts/.hcb-package/"
-  local index_out="/opt/nikkelma/helm-chart-builder/artifacts/index.yaml"
+#  local index_out="/opt/nikkelma/helm-chart-builder/artifacts/index.yaml"
   local since_kind="last-tag"
 #  local since_target
 
@@ -105,16 +105,16 @@ main() {
         exit 1
       fi
       ;;
-    --index-out)
-      if [[ -n "${2:-}" ]]; then
-        index_out="$2"
-        shift 2
-      else
-        echo "ERROR: '--index-out' cannot be empty." >&2
-        usage
-        exit 1
-      fi
-      ;;
+#    --index-out)
+#      if [[ -n "${2:-}" ]]; then
+#        index_out="$2"
+#        shift 2
+#      else
+#        echo "ERROR: '--index-out' cannot be empty." >&2
+#        usage
+#        exit 1
+#      fi
+#      ;;
 #    --since-kind)
 #      if [[ -n "${2:-}" ]]; then
 #        since_kind="$2"
