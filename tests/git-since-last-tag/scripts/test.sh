@@ -63,7 +63,10 @@ main() {
   clean_artifact_dir "/tmp/package-out/"
   rm -rf "/tmp/package-out/"
 
-  $failed || { echo "base tests failed; exiting"; exit 1; }
+  if [[ $failed -ne 0 ]]; then
+    echo "base tests failed; exiting"
+    exit 1
+  fi
 
   echo "should package multiple charts with no previous tags"
   git checkout test-2-1 1>&2
