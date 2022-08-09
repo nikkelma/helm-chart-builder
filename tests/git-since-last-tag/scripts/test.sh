@@ -19,7 +19,7 @@ check_folder_files() {
   fi
 
   local found_file_count
-  found_file_count="$(find "${target_dir}" -mindepth 2 -type f | wc -l)"
+  found_file_count="$(find "${target_dir}" -mindepth 1 -type f | wc -l)"
 
   if [[ ${found_file_count} -ne $# ]]; then
     echo "unexpected file count: got ${found_file_count}, expected $#"
