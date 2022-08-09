@@ -13,7 +13,8 @@ clean_artifact_dir() {
 # function signature: [directory=<directory>] check_folder_files <file> [file...]
 check_folder_files() {
   target_dir="/opt/nikkelma/helm-chart-builder/artifacts/.hcb-package/"
-  if [[ -z ${directory} ]]; then
+  echo "input directory: $directory"
+  if [[ -n ${directory} ]]; then
     target_dir="${directory}"
   fi
 
@@ -27,8 +28,8 @@ check_folder_files() {
 
   local missing_file=0
   for f in "$@" ; do
-    if [[ ! -f "${directory}/${f}" ]]; then
-      echo "unexpected missing file ${directory}/${f}"
+    if [[ ! -f "${target_dir}/${f}" ]]; then
+      echo "unexpected missing file ${target_dir}/${f}"
       missing_file=1
     fi
   done
