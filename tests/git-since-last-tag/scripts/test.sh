@@ -45,20 +45,21 @@ main() {
   local failed=0
 
   echo "---"
+
   echo "running test: should package single chart with no previous tags"
   git checkout test-1-1 1>&2
   hcb.sh --charts-depth=2 1>&2
   { check_folder_files nginx-test-a-1.0.0.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
-
   echo "---"
+
   echo "running test: should package single chart with tag on previous commit"
   git checkout test-1-2 1>&2
   hcb.sh --charts-depth=2 1>&2
   { check_folder_files nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
-
   echo "---"
+
   echo "running test: should package single chart with tag on previous commit in non-default directory"
   git checkout test-1-3 1>&2
   mkdir -p /tmp/package-out 1>&2
@@ -66,26 +67,31 @@ main() {
   { directory="/tmp/package-out" check_folder_files nginx-test-b-1.0.0.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir "/tmp/package-out"
   rm -rf "/tmp/package-out"
+  echo "---"
 
   if [[ $failed -ne 0 ]]; then
-    echo "==="
-    echo "base tests failed; exiting"
+    echo "FAIL: single-chart tests failed; exiting"
     exit 1
   fi
 
-  echo "---"
   echo "should package multiple charts with no previous tags"
   git checkout test-3-1 1>&2
   hcb.sh --charts-depth=2 1>&2
   { check_folder_files nginx-test-a-1.0.0.tgz nginx-test-a-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
-
   echo "---"
+
   echo "should package multiple charts with with tag on previous commit"
   git checkout test-3-2 1>&2
   hcb.sh --charts-depth=2 1>&2
   { check_folder_files nginx-test-b-1.0.0.tgz nginx-test-b-1.0.1.tgz; echo "passed"; } || { failed=1; echo "failed"; }
   clean_artifact_dir
+  echo "---"
+
+  if [[ $failed -ne 0 ]]; then
+    echo "FAIL: multi-chart tests failed; exiting"
+    exit 1
+  fi
 
   popd 1>&2 || {
     echo "failed changing to original directory; exiting" 1>&2
