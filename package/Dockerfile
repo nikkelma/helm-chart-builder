@@ -33,6 +33,8 @@ FROM base as tester
 
 RUN apk --no-cache add yq make
 
+RUN git config --global --add safe.directory '*'
+
 RUN mkdir -p /opt/nikkelma/helm-chart-builder-test/tests/
 WORKDIR /opt/nikkelma/helm-chart-builder-test/
 
